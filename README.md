@@ -2,8 +2,7 @@
 
 [![GitHub Repo](https://img.shields.io/badge/GitHub-huey1in%2FOurStory-181717?logo=github)](https://github.com/huey1in/OurStory)
 ![Astro](https://img.shields.io/badge/Astro-7.x-ff5d01?logo=astro&logoColor=white)
-![GitHub Pages](https://img.shields.io/badge/deploy-GitHub%20Pages-2ea44f?logo=githubpages&logoColor=white)
-[![Deploy Astro site](https://github.com/huey1in/OurStory/actions/workflows/deploy.yml/badge.svg)](https://github.com/huey1in/OurStory/actions/workflows/deploy.yml)
+![Netlify](https://img.shields.io/badge/deploy-Netlify-00c7b7?logo=netlify&logoColor=white)
 
 体验地址：[zhlyxh.com](https://zhlyxh.com)
 
@@ -130,60 +129,35 @@ public/
 
 ## 部署
 
-项目已经包含 GitHub Actions 工作流：
+[![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/huey1in/OurStory)
+
+仓库里已经包含 Netlify 配置：
 
 ```text
-.github/workflows/deploy.yml
+netlify.toml
 ```
 
-它会在推送到 `main` 分支时自动构建并部署到 GitHub Pages，也可以在 GitHub Actions 页面手动触发。
+配置会让 Netlify 使用 Node.js 22，执行 `npm run build`，并发布 `dist` 目录。
 
 ### 首次部署
 
-1. 创建或打开仓库：
+1. 打开 Netlify Dashboard。
+2. 选择 `Add new site -> Import an existing project`。
+3. 连接 GitHub，并选择仓库：
 
 ```text
-https://github.com/huey1in/OurStory
+huey1in/OurStory
 ```
 
-2. 确认 `astro.config.mjs` 里的站点地址是你想发布的地址：
-
-```js
-export default defineConfig({
-  site: "https://xkj.jisuanyun.vip",
-});
-```
-
-3. 推送代码到 `main` 分支：
-
-```bash
-git init
-git remote add origin https://github.com/huey1in/OurStory.git
-git add .
-git commit -m "Initial site"
-git branch -M main
-git push -u origin main
-```
-
-4. 打开 GitHub 仓库设置：
+4. Netlify 会读取 `netlify.toml`，构建配置应为：
 
 ```text
-Settings -> Pages
+Build command: npm run build
+Publish directory: dist
+Node version: 22
 ```
 
-5. 在 `Build and deployment` 中把 `Source` 设置为：
-
-```text
-GitHub Actions
-```
-
-6. 打开：
-
-```text
-Actions -> Deploy Astro site
-```
-
-等待 workflow 完成后，页面会发布到 GitHub Pages。
+5. 点击 `Deploy`，等待构建完成。
 
 ### 日常更新
 
@@ -195,167 +169,39 @@ git commit -m "Update story content"
 git push
 ```
 
-GitHub Actions 会自动执行：
-
-```bash
-npm ci
-npm run build
-```
-
-构建产物位于 `dist/`，随后会通过 GitHub Pages 发布。
-
-GitHub Actions 使用 Node.js 22；如果换到其他托管平台，也需要选择 Node.js `>=22.12.0`。
-
-### 其他托管平台
-
-这个项目是 Astro 静态站，构建命令统一是：
-
-```bash
-npm run build
-```
-
-构建输出目录统一是：
-
-```text
-dist
-```
-
-#### Vercel
-
-Vercel 可以自动识别 Astro 项目，静态 Astro 站通常不需要额外适配器。
-
-1. 打开 Vercel Dashboard。
-2. 选择 `Add New -> Project`。
-3. 从 GitHub 导入：
-
-```text
-huey1in/OurStory
-```
-
-4. Framework Preset 选择或保持自动识别的：
-
-```text
-Astro
-```
-
-5. 确认构建配置：
-
-```text
-Build Command: npm run build
-Output Directory: dist
-Install Command: npm install
-```
-
-6. 点击 `Deploy`。
-
-之后每次推送到 GitHub，Vercel 会自动重新部署。
-
-CLI 部署也可以使用：
-
-```bash
-npm install -g vercel
-vercel
-```
-
-#### Netlify
-
-Netlify 同样可以直接部署静态 Astro 站。
-
-1. 打开 Netlify Dashboard。
-2. 选择 `Add new site -> Import an existing project`。
-3. 连接 GitHub，并选择：
-
-```text
-huey1in/OurStory
-```
-
-4. 确认构建配置：
-
-```text
-Build command: npm run build
-Publish directory: dist
-```
-
-5. 点击 `Deploy`。
-
-如果想把 Netlify 配置固定到仓库，可以新增 `netlify.toml`：
-
-```toml
-[build]
-  command = "npm run build"
-  publish = "dist"
-```
-
-CLI 部署也可以使用：
-
-```bash
-npm install --global netlify-cli
-netlify login
-netlify init
-```
-
-#### Cloudflare Pages
-
-Cloudflare Pages 也适合托管这个静态站。
-
-1. 打开 Cloudflare Dashboard。
-2. 进入：
-
-```text
-Workers & Pages -> Create application -> Pages
-```
-
-3. 选择 `Import an existing Git repository`。
-4. 连接 GitHub，并选择：
-
-```text
-huey1in/OurStory
-```
-
-5. 设置构建配置：
-
-```text
-Production branch: main
-Build command: npm run build
-Build output directory: dist
-Root directory: /
-```
-
-6. 点击 `Save and Deploy`。
-
-之后每次推送到 `main` 分支，Cloudflare Pages 会自动重新构建并发布。
-
-官方文档：
-
-- [Astro on Vercel](https://docs.astro.build/en/guides/deploy/vercel/)
-- [Astro on Netlify](https://docs.astro.build/en/guides/deploy/netlify/)
-- [Astro on Cloudflare Pages](https://developers.cloudflare.com/pages/framework-guides/deploy-an-astro-site/)
+Netlify 会自动拉取最新代码并重新部署。
 
 ### 自定义域名
 
-如果使用自定义域名，需要做两件事：
-
-1. 在 GitHub 仓库中进入：
+如果使用 `zhlyxh.com`，在 Netlify 中进入：
 
 ```text
-Settings -> Pages -> Custom domain
+Site configuration -> Domain management
 ```
 
-填入你的域名。
+添加自定义域名：
 
-2. 在域名服务商处配置 DNS 解析到 GitHub Pages。
+```text
+zhlyxh.com
+```
 
-如果改了正式访问域名，也同步更新：
+然后按 Netlify 提示到域名服务商处配置 DNS。正式域名也需要同步写在：
 
 ```text
 astro.config.mjs
 ```
 
-里的 `site` 字段。
+当前配置为：
+
+```js
+export default defineConfig({
+  site: "https://zhlyxh.com",
+});
+```
 
 ### 部署排查
 
-- 如果 Actions 没有自动运行，确认代码推送到了 `main` 分支。
-- 如果 Pages 没有显示站点，确认 `Settings -> Pages -> Source` 是 `GitHub Actions`。
 - 如果构建失败，先在本地运行 `npm run build` 查看错误。
+- 如果提示 Node.js 版本不支持，确认 Netlify 使用的是 Node.js 22。
+- 如果页面没有更新，确认代码已经推送到 Netlify 连接的分支。
 - 如果图片没有显示，确认图片放在 `public/assets/photos/`，并且 Markdown 中使用 `/assets/photos/xxx.jpg` 这种路径。
