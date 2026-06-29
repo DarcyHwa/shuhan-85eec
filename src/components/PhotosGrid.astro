@@ -1,0 +1,104 @@
+---
+interface Photo {
+  image: string;
+  alt: string;
+  date: string;
+  title: string;
+}
+
+interface Props {
+  photos: Photo[];
+}
+
+const { photos } = Astro.props;
+---
+
+<section class="photos-wall" aria-label="照片墙">
+  {photos.map((photo, index) => (
+    <article class={`photo-tile photo-tile-${(index % 4) + 1}`}>
+      <figure>
+        <button
+          class="photo-open"
+          type="button"
+          aria-label={`放大查看：${photo.title}`}
+          data-photo-open
+          data-photo-src={photo.image}
+          data-photo-alt={photo.alt}
+          data-photo-date={photo.date}
+          data-photo-title={photo.title}
+        >
+          <img src={photo.image} alt={photo.alt} decoding="async" loading={index < 6 ? "eager" : "lazy"} />
+        </button>
+      </figure>
+      <div>
+        <time>{photo.date}</time>
+        <h2>{photo.title}</h2>
+      </div>
+    </article>
+  ))}
+</section>
+
+<div class="photo-lightbox" data-photo-lightbox hidden>
+  <button class="photo-lightbox-close" type="button" data-photo-close aria-label="关闭照片预览">
+    &times;
+  </button>
+  <figure class="photo-lightbox-frame">
+    <img data-photo-lightbox-image src="" alt="" />
+    <figcaption>
+      <time data-photo-lightbox-date></time>
+      <span data-photo-lightbox-title></span>
+    </figcaption>
+  </figure>
+</div>
+
+<script>
+  const lightbox = document.querySelector("[data-photo-lightbox]");
+  const lightboxImage = document.querySelector("[data-photo-lightbox-image]");
+  const lightboxDate = document.querySelector("[data-photo-lightbox-date]");
+  const lightboxTitle = document.querySelector("[data-photo-lightbox-title]");
+  const closeButton = document.querySelector("[data-photo-close]");
+  const openButtons = document.querySelectorAll("[data-photo-open]");
+
+  const closeLightbox = () => {
+    if (!(lightbox instanceof HTMLElement)) return;
+
+    lightbox.hidden = true;
+    document.documentElement.classList.remove("has-photo-lightbox");
+  };
+
+  openButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      if (
+        !(lightbox instanceof HTMLElement) ||
+        !(lightboxImage instanceof HTMLImageElement) ||
+        !(lightboxDate instanceof HTMLElement) ||
+        !(lightboxTitle instanceof HTMLElement) ||
+        !(button instanceof HTMLElement)
+      ) {
+        return;
+      }
+
+      lightboxImage.src = button.dataset.photoSrc ?? "";
+      lightboxImage.alt = button.dataset.photoAlt ?? "";
+      lightboxDate.textContent = button.dataset.photoDate ?? "";
+      lightboxTitle.textContent = button.dataset.photoTitle ?? "";
+      lightbox.hidden = false;
+      document.documentElement.classList.add("has-photo-lightbox");
+      closeButton instanceof HTMLElement && closeButton.focus();
+    });
+  });
+
+  closeButton?.addEventListener("click", closeLightbox);
+
+  lightbox?.addEventListener("click", (event) => {
+    if (event.target === lightbox) {
+      closeLightbox();
+    }
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+      closeLightbox();
+    }
+  });
+</script>

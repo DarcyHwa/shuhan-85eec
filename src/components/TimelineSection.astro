@@ -1,0 +1,69 @@
+---
+import type { AstroComponentFactory } from "astro/runtime/server/index.js";
+
+interface TimelineCard {
+  entry: {
+    data: {
+      side: "left" | "right";
+      tilt: string;
+      image: string;
+      alt: string;
+      date: string;
+      title: string;
+    };
+  };
+  Content: AstroComponentFactory;
+}
+
+interface Props {
+  timelineCards: TimelineCard[];
+}
+
+const { timelineCards } = Astro.props;
+---
+
+<section id="timeline" class="timeline-section">
+  <h2>时间线<span>♡</span></h2>
+  <div class="timeline-line" aria-hidden="true">
+    <span class="node n1"></span>
+    <span class="node n2"></span>
+    <span class="node n3"></span>
+  </div>
+
+  {timelineCards.map(({ entry, Content }, index) => (
+    <article class={`event event-${entry.data.side} event-${index + 1}`}>
+      {entry.data.side === "left" ? (
+        <>
+          <figure class={`polaroid small-photo ${entry.data.tilt}`}>
+            <span class="tape tape-corner-left"></span>
+            <img src={entry.data.image} alt={entry.data.alt} decoding="async" loading="lazy" />
+            <figcaption><span>♡</span></figcaption>
+          </figure>
+          <div class="memory-card">
+            <time>{entry.data.date}</time>
+            <h3>{entry.data.title} <span>♡</span></h3>
+            <Content />
+          </div>
+        </>
+      ) : (
+        <>
+          <div class="memory-card">
+            <time>{entry.data.date}</time>
+            <h3>{entry.data.title} <span>♡</span></h3>
+            <Content />
+          </div>
+          <figure class={`polaroid small-photo ${entry.data.tilt}`}>
+            <span class="tape tape-corner-right"></span>
+            <img src={entry.data.image} alt={entry.data.alt} decoding="async" loading="lazy" />
+            <figcaption><span>♡</span></figcaption>
+          </figure>
+        </>
+      )}
+    </article>
+  ))}
+
+  <p class="future">
+    未来的每一天，<br />
+    都想和你一起度过。<span>♡</span>
+  </p>
+</section>

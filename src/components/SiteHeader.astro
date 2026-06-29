@@ -1,0 +1,67 @@
+---
+interface Props {
+  active: "home" | "photos";
+}
+
+const { active } = Astro.props;
+
+const navItems = [
+  { href: "/", label: "首页", key: "home" },
+  { href: "/photos", label: "照片墙", key: "photos" },
+] as const;
+---
+
+<header class="topbar">
+  <a class="brand brand-link" href="/">Our Story <span>♡</span></a>
+  <button class="menu-toggle" type="button" aria-label="打开导航菜单" aria-expanded="false" aria-controls="site-nav">
+    <span></span>
+    <span></span>
+    <span></span>
+  </button>
+  <nav id="site-nav" class="nav" aria-label="页面导航">
+    {navItems.map((item) => (
+      <a class:list={["nav-link", `nav-${item.key}`, { active: active === item.key }]} href={item.href}>
+        <span class="nav-label">{item.label}</span>
+      </a>
+    ))}
+  </nav>
+</header>
+
+<script>
+  if (!document.documentElement.dataset.mobileMenuReady) {
+    document.documentElement.dataset.mobileMenuReady = "true";
+
+    document.addEventListener("click", (event) => {
+      const menuButton = event.target instanceof Element ? event.target.closest(".menu-toggle") : null;
+
+      if (!(menuButton instanceof HTMLButtonElement)) {
+        return;
+      }
+
+      const siteNav = document.querySelector("#site-nav");
+
+      if (!(siteNav instanceof HTMLElement)) {
+        return;
+      }
+
+      const nextExpanded = menuButton.getAttribute("aria-expanded") !== "true";
+
+      menuButton.setAttribute("aria-expanded", String(nextExpanded));
+      menuButton.setAttribute("aria-label", nextExpanded ? "关闭导航菜单" : "打开导航菜单");
+      siteNav.classList.toggle("is-open", nextExpanded);
+    });
+  }
+
+  document.addEventListener("astro:before-swap", () => {
+    const menuButton = document.querySelector(".menu-toggle");
+    const siteNav = document.querySelector("#site-nav");
+
+    if (!(menuButton instanceof HTMLButtonElement) || !(siteNav instanceof HTMLElement)) {
+      return;
+    }
+
+    menuButton.setAttribute("aria-expanded", "false");
+    menuButton.setAttribute("aria-label", "打开导航菜单");
+    siteNav.classList.remove("is-open");
+  });
+</script>

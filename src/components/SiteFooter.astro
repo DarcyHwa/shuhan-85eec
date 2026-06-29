@@ -1,0 +1,32 @@
+---
+import { formatDateLabel, siteConfig } from "../site.config";
+
+interface Props {
+  showHomeLink?: boolean;
+  showPhotosLink?: boolean;
+}
+
+const { showHomeLink = false, showPhotosLink = true } = Astro.props;
+const relationshipStart = formatDateLabel();
+---
+
+<footer id="guestbook" class="footer-note">
+  <div class="footer-main">
+    <div class="footer-brand">
+      <span>♡</span>
+      <h2>Our Story</h2>
+      <p>Thank you for appearing in my life.</p>
+    </div>
+
+    <div class="footer-links" aria-label="页脚导航">
+      {showHomeLink && <a href="/">首页</a>}
+      {showPhotosLink && <a href="/photos">照片墙</a>}
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <p>把每个瞬间轻轻收藏</p>
+    <p>Since {relationshipStart}</p>
+    <p>{siteConfig.copyright}</p>
+  </div>
+</footer>

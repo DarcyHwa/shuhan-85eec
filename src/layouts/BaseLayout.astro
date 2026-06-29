@@ -1,0 +1,93 @@
+---
+import { ClientRouter } from "astro:transitions";
+
+const {
+  title = "Our Story",
+  description = "A handwritten memorial site built with Astro.",
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <title>{title}</title>
+    <ClientRouter fallback="animate" />
+  </head>
+  <body>
+    <slot />
+    <script>
+      if (!window.__ourStoryTransitionImagesReady) {
+        window.__ourStoryTransitionImagesReady = true;
+
+        const preloadImage = (src, signal) =>
+          new Promise((resolve) => {
+            if (!src || signal?.aborted) {
+              resolve();
+              return;
+            }
+
+            const image = new Image();
+            const finish = () => resolve();
+
+            image.onload = async () => {
+              try {
+                await image.decode?.();
+              } catch {
+                // Decoding is a polish step; failed decode should never block navigation.
+              }
+              finish();
+            };
+            image.onerror = finish;
+            image.src = src;
+          });
+
+        const warmNextPageImages = async (event) => {
+          const nextDocument = event.newDocument;
+          const nextUrl = event.to;
+
+          if (!(nextDocument instanceof Document) || !(nextUrl instanceof URL)) {
+            return;
+          }
+
+          const images = Array.from(
+            nextDocument.querySelectorAll(
+              ".hero-photo img, .photo-tile img, .small-photo img, .generated-couple, .generated-flower, .bottom-park-art",
+            ),
+          )
+            .map((image) => image.getAttribute("src"))
+            .filter(Boolean)
+            .slice(0, 8)
+            .map((src) => new URL(src, nextUrl).href);
+
+          if (!images.length) {
+            return;
+          }
+
+          await Promise.race([
+            Promise.allSettled(images.map((src) => preloadImage(src, event.signal))),
+            new Promise((resolve) => setTimeout(resolve, 850)),
+          ]);
+        };
+
+        document.addEventListener("astro:before-preparation", (event) => {
+          const originalLoader = event.loader;
+
+          if (typeof originalLoader !== "function") {
+            return;
+          }
+
+          event.loader = async () => {
+            await originalLoader();
+
+            if (!event.defaultPrevented && !event.signal?.aborted) {
+              await warmNextPageImages(event);
+            }
+          };
+        });
+      }
+    </script>
+  </body>
+</html>

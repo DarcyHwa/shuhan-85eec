@@ -1,0 +1,75 @@
+---
+import { getTogetherDays, siteConfig } from "../site.config";
+
+const togetherDays = getTogetherDays();
+const heroMedia = siteConfig.heroMedia;
+const heroFlowerImage = "/assets/illustrations/flower-sprig.png";
+---
+
+<section class="hero-section" aria-labelledby="hero-title">
+  <div id="story" class="hero-copy">
+    <h1 id="hero-title">
+      因为是你，
+      <br />
+      所以每天都很美好。
+    </h1>
+    <p>一起走过的每一天，都是独一无二的回忆。</p>
+    <div class="doodle-couple" aria-hidden="true">
+      <img class="generated-couple" src="/assets/illustrations/couple-doodle.png" alt="" />
+      <svg viewBox="0 0 150 70" role="img">
+        <g class="sketch-line">
+          <path d="M19 45c-6-3-10-9-10-17 0-11 9-19 20-19 12 0 22 8 22 20 0 8-4 14-10 17" />
+          <path d="M13 27c3-12 10-16 19-14 4 1 7 3 10 6 4 1 7 4 8 9" />
+          <path d="M20 31c2-2 6-2 8 0M35 31c2-2 6-2 8 0" />
+          <path d="M27 39c4 3 9 3 13 0M19 47c4 7 19 7 25 0" />
+          <path d="M89 48c-9-5-13-13-12-24 1-12 10-19 22-18 13 0 22 8 24 20 1 9-2 17-10 22" />
+          <path d="M80 33c6-17 30-24 40-2M85 30c7 4 17 2 24-7" />
+          <path d="M90 35c2-2 5-2 7 0M106 35c2-2 5-2 7 0" />
+          <path d="M96 45c4 3 10 3 14-1M85 50c7 9 26 8 33-1" />
+        </g>
+      </svg>
+      <span class="mini-heart">♡</span>
+    </div>
+    <div class="days">
+      在一起的第 <em data-together-days>{togetherDays}</em> 天
+    </div>
+  </div>
+
+  <div class="hero-media-stack">
+    <figure class="polaroid hero-photo rotate-hero">
+      <span class="tape tape-top"></span>
+      <img src={heroMedia.image} alt={heroMedia.imageAlt} decoding="async" fetchpriority="high" />
+      <figcaption>{heroMedia.caption} <span>♡</span></figcaption>
+    </figure>
+
+    <img class="generated-flower" src={heroFlowerImage} alt="" decoding="async" />
+    <svg class="flower-sprig" viewBox="0 0 170 260" aria-hidden="true">
+    <g class="sprig-line">
+      <path d="M39 236C79 174 110 108 126 24" />
+      <path d="M76 181c-20-19-35-28-52-34M89 155c24-5 41-17 54-39M101 125c-19-18-28-35-30-52M114 92c18-7 27-18 35-32M58 210c22 0 40-7 53-24M123 52c-10-12-12-25-6-39" />
+      <path d="M26 146c9-2 15 1 18 9-9 4-16 0-18-9ZM47 158c7-5 15-4 20 3-7 7-16 6-20-3ZM84 74c9-3 16 0 20 8-9 5-17 2-20-8ZM137 59c7-8 15-10 23-5-6 10-15 11-23 5ZM136 114c8-4 16-3 22 4-8 7-17 5-22-4ZM101 187c9-3 17 1 21 8-10 5-18 2-21-8ZM115 18c8-6 16-6 22 1-7 8-16 8-22-1Z" />
+    </g>
+    <g class="sprig-flower">
+      <path d="M71 177c4-9 16-8 19 1 2 8-7 15-14 10-5-3-6-7-5-11Z" />
+      <path d="M133 87c5-8 16-6 18 2 2 8-6 15-13 11-5-3-7-8-5-13Z" />
+      <path d="M39 132c4-8 14-8 18-1 3 7-4 15-12 12-5-1-8-6-6-11Z" />
+    </g>
+  </svg>
+  </div>
+
+  <div class="love-note">
+    I love you <span>♡</span>
+  </div>
+</section>
+
+<script define:vars={{ startDate: siteConfig.relationship.startDate }}>
+  const target = document.querySelector("[data-together-days]");
+  if (target) {
+    const dayMs = 24 * 60 * 60 * 1000;
+    const [year, month, day] = startDate.split("-").map(Number);
+    const start = Date.UTC(year, month - 1, day);
+    const now = new Date();
+    const current = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
+    target.textContent = String(Math.max(1, Math.floor((current - start) / dayMs) + 1));
+  }
+</script>

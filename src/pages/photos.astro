@@ -1,0 +1,32 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import PhotosGrid from "../components/PhotosGrid.astro";
+import PhotosHero from "../components/PhotosHero.astro";
+import SiteFooter from "../components/SiteFooter.astro";
+import SiteHeader from "../components/SiteHeader.astro";
+import "../styles/global.css";
+
+const timelineEntries = (await getCollection("timeline")).sort(
+  (a, b) => a.data.order - b.data.order,
+);
+
+const photos = timelineEntries.map((entry) => ({
+  image: entry.data.image,
+  alt: entry.data.alt,
+  date: entry.data.date,
+  title: entry.data.title,
+}));
+---
+
+<BaseLayout title="照片墙 | Our Story" description="收藏我们一路走来的照片瞬间。">
+  <main class="page-shell" aria-label="Our Story photos page">
+    <section class="artboard photos-page">
+      <div class="paper-noise"></div>
+      <SiteHeader active="photos" />
+      <PhotosHero />
+      <PhotosGrid photos={photos} />
+      <SiteFooter showHomeLink showPhotosLink={false} />
+    </section>
+  </main>
+</BaseLayout>

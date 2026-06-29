@@ -1,0 +1,13 @@
+node_modules
+dist
+.astro
+tmp
+comparison-*.png
+font-samples.png
+
+.env
+.env.*
+*.log
+npm-debug.log*
+.DS_Store
+Thumbs.db
