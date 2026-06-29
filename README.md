@@ -5,7 +5,9 @@
 ![GitHub Pages](https://img.shields.io/badge/deploy-GitHub%20Pages-2ea44f?logo=githubpages&logoColor=white)
 [![Deploy Astro site](https://github.com/huey1in/OurStory/actions/workflows/deploy.yml/badge.svg)](https://github.com/huey1in/OurStory/actions/workflows/deploy.yml)
 
-一个用 Astro 构建的双页纪念站。。
+体验地址：[zhlyxh.com](https://zhlyxh.com)
+
+一个用 Astro 构建的双页纪念站。
 
 
 ## 功能
@@ -32,6 +34,12 @@ npm run preview
 ```
 
 项目当前只依赖 Astro。
+
+Node.js 版本要求：
+
+```text
+>=22.12.0
+```
 
 ## 内容更新
 
@@ -195,6 +203,8 @@ npm run build
 ```
 
 构建产物位于 `dist/`，随后会通过 GitHub Pages 发布。
+
+GitHub Actions 使用 Node.js 22；如果换到其他托管平台，也需要选择 Node.js `>=22.12.0`。
 
 ### 其他托管平台
 
