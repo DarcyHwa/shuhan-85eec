@@ -1,5 +1,7 @@
 # Our Story
 
+![Our Story logo](public/assets/logo.png)
+
 [![GitHub Repo](https://img.shields.io/badge/GitHub-huey1in%2FOurStory-181717?logo=github)](https://github.com/huey1in/OurStory)
 ![Astro](https://img.shields.io/badge/Astro-7.x-ff5d01?logo=astro&logoColor=white)
 ![Netlify](https://img.shields.io/badge/deploy-Netlify-00c7b7?logo=netlify&logoColor=white)
@@ -17,6 +19,7 @@
 - 移动端导航：小屏幕使用汉堡菜单。
 - 页面切换：使用 Astro `ClientRouter`，并在切换前预热目标页面图片。
 - 视觉风格：纸张背景、拍立得照片、胶带、手绘圈选中状态、Laura Cursive 字体。
+- 品牌资源：站点 Logo 使用 `public/assets/logo.png`，浏览器标签图标使用 `public/favicon.png`。
 
 ## 开发
 

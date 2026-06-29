@@ -143,9 +143,24 @@ svg {
 .brand {
   position: relative;
   flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   font-size: clamp(22px, 2.2vw, 30px);
   line-height: 1;
   font-family: "Laura Cursive", serif;
+}
+
+.brand-logo {
+  width: clamp(34px, 4vw, 46px);
+  height: auto;
+  flex: 0 0 auto;
+  filter: sepia(0.06) saturate(0.88) contrast(0.94);
+}
+
+.brand-text {
+  display: inline-block;
+  transform: rotate(-1.2deg);
 }
 
 .brand-link {
@@ -207,7 +222,6 @@ svg {
   transform: rotate(-41deg);
 }
 
-.brand span,
 .nav a.active .nav-label,
 .hero-copy em,
 figcaption span,
