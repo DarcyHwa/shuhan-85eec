@@ -53,6 +53,7 @@ const STACK_LIMIT = 3;
             aria-hidden={i > 0 ? "true" : undefined}
           >
             {i === 0 && <span class={`tape tape-corner-${tapeSide}`}></span>}
+            <span class="thumb-spinner" aria-hidden="true"></span>
             <img src={src} alt={i === 0 ? alt : ""} decoding="async" loading="lazy" />
             {i === 0 && <figcaption><span>♡</span></figcaption>}
           </figure>
@@ -70,6 +71,7 @@ const STACK_LIMIT = 3;
         aria-label={`查看「${title}」的照片`}
       >
         <span class={`tape tape-corner-${tapeSide}`}></span>
+        <span class="thumb-spinner" aria-hidden="true"></span>
         <img src={stackImgs[0]} alt={alt} decoding="async" loading="lazy" />
         <figcaption><span>♡</span></figcaption>
       </figure>
@@ -111,6 +113,7 @@ const STACK_LIMIT = 3;
   <button class="lb-close" data-lb-close aria-label="关闭">&times;</button>
   <button class="lb-nav lb-prev" data-lb-prev aria-label="上一张">&#8249;</button>
   <figure class="lb-stage">
+    <span class="lb-spinner" data-lb-spinner aria-hidden="true"></span>
     <img class="lb-img" data-lb-img src="" alt="" />
     <figcaption class="lb-caption"><span class="lb-counter" data-lb-counter></span></figcaption>
   </figure>
@@ -128,14 +131,24 @@ const STACK_LIMIT = 3;
     const btnPrev = lb.querySelector<HTMLElement>("[data-lb-prev]")!;
     const btnNext = lb.querySelector<HTMLElement>("[data-lb-next]")!;
     const btnClose = lb.querySelector<HTMLElement>("[data-lb-close]")!;
+    const stage = lb.querySelector<HTMLElement>(".lb-stage")!;
 
     let images: string[] = [];
     let alt = "";
     let idx = 0;
     let lastTrigger: HTMLElement | null = null;
 
+    // 图片加载完成/失败时收起加载指示器（缓存命中也会触发 load）
+    imgEl.addEventListener("load", () => stage.classList.remove("is-loading"));
+    imgEl.addEventListener("error", () => stage.classList.remove("is-loading"));
+
     const render = () => {
+      stage.classList.add("is-loading");
       imgEl.src = images[idx];
+      // 若已在缓存中（complete 立即为 true），直接收起指示器，避免闪一下
+      if (imgEl.complete && imgEl.naturalWidth > 0) {
+        stage.classList.remove("is-loading");
+      }
       imgEl.alt = images.length > 1 ? `${alt}（${idx + 1}）` : alt;
       counterEl.textContent =
         images.length > 1 ? `${idx + 1} / ${images.length}` : "";
@@ -158,14 +171,14 @@ const STACK_LIMIT = 3;
       render();
       lb.hidden = false;
       lb.setAttribute("aria-hidden", "false");
-      document.body.style.overflow = "hidden";
+      document.documentElement.classList.add("has-photo-lightbox");
       requestAnimationFrame(() => lb.classList.add("open"));
       btnClose.focus();
     };
 
     const close = () => {
       lb.classList.remove("open");
-      document.body.style.overflow = "";
+      document.documentElement.classList.remove("has-photo-lightbox");
       lb.setAttribute("aria-hidden", "true");
       const done = () => {
         lb.hidden = true;
@@ -196,6 +209,21 @@ const STACK_LIMIT = 3;
     btnClose.addEventListener("click", close);
     btnPrev.addEventListener("click", (e) => { e.stopPropagation(); go(-1); });
     btnNext.addEventListener("click", (e) => { e.stopPropagation(); go(1); });
+
+    // 时间线缩略图：加载完成前显示指示器
+    document.querySelectorAll<HTMLImageElement>(
+      ".small-photo img",
+    ).forEach((img) => {
+      const fig = img.closest(".polaroid");
+      if (!fig) return;
+      const done = () => fig.classList.add("img-loaded");
+      if (img.complete && img.naturalWidth > 0) done();
+      else {
+        img.addEventListener("load", done, { once: true });
+        img.addEventListener("error", done, { once: true });
+      }
+    });
+
     // 点击遮罩空白处关闭
     lb.addEventListener("click", (e) => {
       if (e.target === lb) close();

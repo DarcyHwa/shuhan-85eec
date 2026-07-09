@@ -489,6 +489,13 @@ h3 span,
   object-fit: cover;
   filter: saturate(0.87) contrast(0.96) sepia(0.04);
 }
+.small-photo img {
+  opacity: 0;
+  transition: opacity 260ms ease;
+}
+.polaroid.img-loaded.small-photo img {
+  opacity: 1;
+}
 
 .polaroid figcaption {
   position: relative;
@@ -537,6 +544,26 @@ h3 span,
 
 .small-photo img {
   aspect-ratio: 1.13;
+}
+
+/* 缩略图加载指示器：默认可见，图片就绪后（.img-loaded）淡出 */
+.thumb-spinner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 26px;
+  height: 26px;
+  margin: -13px 0 0 -13px;
+  border: 3px solid rgba(83, 61, 42, 0.18);
+  border-top-color: rgba(83, 61, 42, 0.6);
+  border-radius: 50%;
+  z-index: 1;
+  pointer-events: none;
+  animation: lb-spin 0.7s linear infinite;
+  transition: opacity 220ms ease;
+}
+.polaroid.img-loaded .thumb-spinner {
+  opacity: 0;
 }
 
 .small-photo figcaption {
@@ -1251,6 +1278,7 @@ h3 span,
 }
 
 .lb-stage {
+  position: relative;
   margin: 0;
   display: flex;
   flex-direction: column;
@@ -1262,6 +1290,35 @@ h3 span,
 }
 .lightbox.open .lb-stage {
   transform: scale(1);
+}
+
+/* 加载指示器：居中于舞台，图片就绪后淡出 */
+.lb-spinner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 40px;
+  height: 40px;
+  margin: -20px 0 0 -20px;
+  border: 3px solid rgba(255, 249, 241, 0.25);
+  border-top-color: rgba(255, 249, 241, 0.9);
+  border-radius: 50%;
+  opacity: 0;
+  pointer-events: none;
+  animation: lb-spin 0.7s linear infinite;
+}
+.lb-stage.is-loading .lb-spinner {
+  opacity: 1;
+}
+.lb-stage.is-loading .lb-img {
+  opacity: 0.25;
+}
+.lb-img {
+  transition: opacity 200ms ease;
+}
+
+@keyframes lb-spin {
+  to { transform: rotate(360deg); }
 }
 
 .lb-img {
@@ -1286,8 +1343,10 @@ h3 span,
 .lb-nav,
 .lb-close {
   flex: none;
+  box-sizing: border-box;
   display: grid;
   place-items: center;
+  padding: 0;
   border: none;
   background: rgba(255, 249, 241, 0.12);
   color: #fff9f1;
@@ -1295,7 +1354,6 @@ h3 span,
   border-radius: 999px;
   transition: background 160ms ease, transform 160ms ease;
 }
-.lb-nav:hover,
 .lb-close:hover {
   background: rgba(255, 249, 241, 0.28);
 }
@@ -1303,8 +1361,14 @@ h3 span,
 .lb-nav {
   width: 52px;
   height: 52px;
+  background: #e9ded0;
+  color: var(--ink);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
   font-size: 30px;
   line-height: 1;
+}
+.lb-nav:hover {
+  background: var(--paper);
 }
 .lb-nav:active { transform: scale(0.9); }
 
@@ -1312,8 +1376,12 @@ h3 span,
   position: absolute;
   top: clamp(12px, 3vw, 28px);
   right: clamp(12px, 3vw, 28px);
+  flex-shrink: 0;
   width: 44px;
   height: 44px;
+  min-width: 44px;
+  min-height: 44px;
+  aspect-ratio: 1;
   font-size: 30px;
   line-height: 1;
 }

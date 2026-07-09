@@ -3,7 +3,7 @@ const dayMs = 24 * 60 * 60 * 1000;
 export const siteConfig = {
   copyright: "© 2026 zhlyxh.com All rights reserved.",
   heroMedia: {
-    image: "/assets/photos/hezhao.jpg",
+    image: "/assets/photos/2026_06_17_17_49_59_IMG_9752.JPG",
     caption: "2025.10.25"
   },
   relationship: {
