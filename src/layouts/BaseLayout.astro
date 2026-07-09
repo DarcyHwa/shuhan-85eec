@@ -14,70 +14,34 @@ const {
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content={description} />
     <link rel="icon" type="image/png" href="/favicon.png" />
-    <link rel="preload" href="/fonts/Laura-Cursive-subset.woff2" as="font" type="font/woff2" crossorigin />
     <title>{title}</title>
     <ClientRouter fallback="animate" />
     <script is:inline>
-      // 只在首次加载（非 View Transitions 路由切换）时显示加载指示器
-      if (!window.__pgLoaderDone) {
-        const MAX_WAIT_MS = 5000; // 网络再差，最多等 5 秒
+      // 首次加载时立即在 <html> 上标记骨架屏状态，避免字体就绪前露出文字
+      if (!window.__pgFontsReady) {
+        document.documentElement.classList.add("fonts-loading");
+
+        const MAX_WAIT_MS = 6000;
 
         const finish = () => {
-          if (window.__pgLoaderDone) return;
-          window.__pgLoaderDone = true;
-
-          const loader = document.getElementById("pg-loader");
-          if (!loader) return;
-
-          loader.classList.add("pg-loader--done");
-          loader.addEventListener(
-            "transitionend",
-            () => loader.remove(),
-            { once: true },
-          );
+          if (window.__pgFontsReady) return;
+          window.__pgFontsReady = true;
+          const html = document.documentElement;
+          html.classList.remove("fonts-loading");
+          html.classList.add("fonts-loaded");
         };
 
         const timer = setTimeout(finish, MAX_WAIT_MS);
 
         document.fonts.ready.then(() => {
           clearTimeout(timer);
-          // 双 rAF：确保浏览器已用新字体完成首帧绘制，再移除遮罩
+          // 双 rAF：确保浏览器已用新字体完成首帧绘制，再移除骨架屏
           requestAnimationFrame(() => requestAnimationFrame(finish));
         });
       }
     </script>
-    <style>
-      #pg-loader {
-        position: fixed;
-        inset: 0;
-        z-index: 9999;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: #f1e4d5;
-        transition: opacity 500ms ease;
-      }
-      #pg-loader.pg-loader--done {
-        opacity: 0;
-        pointer-events: none;
-      }
-      .pg-loader__heart {
-        color: #d9968c;
-        font-size: 52px;
-        line-height: 1;
-        animation: pg-loader-pulse 1.3s ease-in-out infinite;
-        font-family: serif;
-      }
-      @keyframes pg-loader-pulse {
-        0%, 100% { transform: scale(1) rotate(-12deg); }
-        50%       { transform: scale(1.22) rotate(-12deg); }
-      }
-    </style>
   </head>
   <body>
-    <div id="pg-loader" aria-hidden="true">
-      <span class="pg-loader__heart">♡</span>
-    </div>
     <slot />
     <script>
       if (!window.__ourStoryTransitionImagesReady) {

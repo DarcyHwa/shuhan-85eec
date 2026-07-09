@@ -12,12 +12,75 @@
 
 @font-face {
   font-family: "Laura Cursive";
-  src:
-    url("/fonts/Laura-Cursive-subset.woff2") format("woff2"),
-    url("/fonts/Laura Cursive.otf") format("opentype");
+  src: url("/fonts/Laura Cursive.otf") format("opentype");
   font-style: normal;
   font-weight: 400;
   font-display: block;
+}
+
+/* ── Skeleton screen ─────────────────────────────────────────────────────── */
+@keyframes sk-shimmer {
+  0%   { background-position: -600px 0; }
+  100% { background-position:  600px 0; }
+}
+
+html.fonts-loading .brand-text,
+html.fonts-loading .nav-label,
+html.fonts-loading .hero-copy h1,
+html.fonts-loading .hero-copy p,
+html.fonts-loading .days,
+html.fonts-loading .love-note,
+html.fonts-loading .memory-card time,
+html.fonts-loading .memory-card h3,
+html.fonts-loading .memory-card p,
+html.fonts-loading .future,
+html.fonts-loading figcaption,
+html.fonts-loading .photos-eyebrow,
+html.fonts-loading .photos-hero h1,
+html.fonts-loading .photos-hero p:last-child,
+html.fonts-loading .photo-tile h2,
+html.fonts-loading .photo-tile time,
+html.fonts-loading .footer-brand span,
+html.fonts-loading .footer-brand h2,
+html.fonts-loading .footer-brand p,
+html.fonts-loading .footer-bottom p {
+  color: transparent !important;
+  background: linear-gradient(
+    90deg,
+    rgba(205, 186, 163, 0.55) 0%,
+    rgba(232, 217, 197, 0.85) 50%,
+    rgba(205, 186, 163, 0.55) 100%
+  );
+  background-size: 600px 100%;
+  animation: sk-shimmer 1.5s ease-in-out infinite;
+  border-radius: 5px;
+  user-select: none;
+}
+
+/* 字体加载完毕后文字淡入 */
+html.fonts-loaded .brand-text,
+html.fonts-loaded .nav-label,
+html.fonts-loaded .hero-copy h1,
+html.fonts-loaded .hero-copy p,
+html.fonts-loaded .days,
+html.fonts-loaded .love-note,
+html.fonts-loaded .memory-card time,
+html.fonts-loaded .memory-card h3,
+html.fonts-loaded .memory-card p,
+html.fonts-loaded .future,
+html.fonts-loaded figcaption,
+html.fonts-loaded .photos-eyebrow,
+html.fonts-loaded .photos-hero h1,
+html.fonts-loaded .photos-hero p:last-child,
+html.fonts-loaded .photo-tile h2,
+html.fonts-loaded .photo-tile time,
+html.fonts-loaded .footer-brand span,
+html.fonts-loaded .footer-brand h2,
+html.fonts-loaded .footer-brand p,
+html.fonts-loaded .footer-bottom p {
+  animation: none;
+  background: none;
+  transition: color 280ms ease;
 }
 
 * {
