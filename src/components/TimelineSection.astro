@@ -43,6 +43,8 @@ const STACK_LIMIT = 3;
         data-lightbox
         data-images={JSON.stringify(images)}
         data-alt={alt}
+        data-date={date}
+        data-title={title}
         role="button"
         tabindex="0"
         aria-label={`查看「${title}」的 ${images.length} 张照片`}
@@ -66,6 +68,8 @@ const STACK_LIMIT = 3;
         data-lightbox
         data-images={JSON.stringify(images)}
         data-alt={alt}
+        data-date={date}
+        data-title={title}
         role="button"
         tabindex="0"
         aria-label={`查看「${title}」的照片`}
@@ -112,10 +116,14 @@ const STACK_LIMIT = 3;
 <div id="lightbox" class="lightbox" hidden aria-hidden="true" role="dialog" aria-modal="true" aria-label="照片查看">
   <button class="lb-close" data-lb-close aria-label="关闭">&times;</button>
   <button class="lb-nav lb-prev" data-lb-prev aria-label="上一张">&#8249;</button>
-  <figure class="lb-stage">
+  <figure class="lb-frame">
     <span class="lb-spinner" data-lb-spinner aria-hidden="true"></span>
     <img class="lb-img" data-lb-img src="" alt="" />
-    <figcaption class="lb-caption"><span class="lb-counter" data-lb-counter></span></figcaption>
+    <figcaption class="lb-caption">
+      <time class="lb-date" data-lb-date></time>
+      <span class="lb-title" data-lb-title></span>
+      <span class="lb-counter" data-lb-counter></span>
+    </figcaption>
   </figure>
   <button class="lb-nav lb-next" data-lb-next aria-label="下一张">&#8250;</button>
 </div>
@@ -128,10 +136,12 @@ const STACK_LIMIT = 3;
 
     const imgEl = lb.querySelector<HTMLImageElement>("[data-lb-img]")!;
     const counterEl = lb.querySelector<HTMLElement>("[data-lb-counter]")!;
+    const dateEl = lb.querySelector<HTMLElement>("[data-lb-date]")!;
+    const titleEl = lb.querySelector<HTMLElement>("[data-lb-title]")!;
     const btnPrev = lb.querySelector<HTMLElement>("[data-lb-prev]")!;
     const btnNext = lb.querySelector<HTMLElement>("[data-lb-next]")!;
     const btnClose = lb.querySelector<HTMLElement>("[data-lb-close]")!;
-    const stage = lb.querySelector<HTMLElement>(".lb-stage")!;
+    const stage = lb.querySelector<HTMLElement>(".lb-frame")!;
 
     let images: string[] = [];
     let alt = "";
@@ -162,15 +172,22 @@ const STACK_LIMIT = 3;
       });
     };
 
+    let savedScrollY = 0;
+
     const open = (trigger: HTMLElement) => {
       images = JSON.parse(trigger.dataset.images ?? "[]");
       alt = trigger.dataset.alt ?? "";
+      dateEl.textContent = trigger.dataset.date ?? "";
+      titleEl.textContent = trigger.dataset.title ?? "";
       idx = 0;
       if (!images.length) return;
       lastTrigger = trigger;
       render();
       lb.hidden = false;
       lb.setAttribute("aria-hidden", "false");
+      // 固定 body 防止移动端触摸滚动穿透（记录并锁定当前滚动位置）
+      savedScrollY = window.scrollY;
+      document.body.style.top = `-${savedScrollY}px`;
       document.documentElement.classList.add("has-photo-lightbox");
       requestAnimationFrame(() => lb.classList.add("open"));
       btnClose.focus();
@@ -179,6 +196,13 @@ const STACK_LIMIT = 3;
     const close = () => {
       lb.classList.remove("open");
       document.documentElement.classList.remove("has-photo-lightbox");
+      document.body.style.top = "";
+      // 临时关掉 html 的 scroll-behavior:smooth，否则恢复滚动会从顶部平滑滚动、定位不准
+      const html = document.documentElement;
+      const prevBehavior = html.style.scrollBehavior;
+      html.style.scrollBehavior = "auto";
+      window.scrollTo(0, savedScrollY);
+      html.style.scrollBehavior = prevBehavior;
       lb.setAttribute("aria-hidden", "true");
       const done = () => {
         lb.hidden = true;

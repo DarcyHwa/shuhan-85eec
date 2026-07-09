@@ -96,6 +96,16 @@ html.has-photo-lightbox,
 html.has-photo-lightbox body {
   overflow: hidden;
 }
+/* 移动端 overflow:hidden 挡不住触摸滚动，改用固定 body（top 由 JS 设置）。
+   注意：不能用 inset:0，其 bottom:0 会与 JS 设的负 top 冲突、把 body 高度拉伸，
+   关闭恢复滚动时定位错乱。只固定 top/left/right，高度由内容决定。 */
+html.has-photo-lightbox body {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+}
 
 @keyframes page-fade-out {
   from {
@@ -994,7 +1004,7 @@ h3 span,
 .photo-lightbox-frame {
   position: relative;
   width: min(920px, 92vw);
-  max-height: 88vh;
+  max-height: 88dvh;
   margin: 0;
   padding: clamp(12px, 1.8vw, 18px) clamp(12px, 1.8vw, 18px) clamp(48px, 5vw, 66px);
   background: rgba(255, 253, 247, 0.96);
@@ -1023,7 +1033,7 @@ h3 span,
 .photo-lightbox-frame img {
   display: block;
   width: 100%;
-  max-height: calc(88vh - 132px);
+  max-height: calc(88dvh - 132px);
   object-fit: contain;
   background: rgba(235, 222, 206, 0.35);
 }
@@ -1254,12 +1264,12 @@ h3 span,
   position: fixed;
   inset: 0;
   z-index: 1000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: clamp(16px, 4vw, 48px);
-  background: rgba(38, 30, 22, 0);
+  display: grid;
+  place-items: center;
+  padding: clamp(20px, 4vw, 52px);
+  background:
+    radial-gradient(circle at 18% 14%, rgba(255, 252, 246, 0), transparent 26%),
+    rgba(36, 31, 27, 0);
   backdrop-filter: blur(0px);
   opacity: 0;
   transition: opacity 260ms ease, background 260ms ease, backdrop-filter 260ms ease;
@@ -1267,32 +1277,53 @@ h3 span,
 
 .lightbox.open {
   opacity: 1;
-  background: rgba(38, 30, 22, 0.82);
-  backdrop-filter: blur(4px);
+  background:
+    radial-gradient(circle at 18% 14%, rgba(255, 252, 246, 0.82), transparent 26%),
+    rgba(36, 31, 27, 0.58);
+  backdrop-filter: blur(5px);
 }
 
-/* 未打开时真正隐藏：否则 display:flex 会覆盖 [hidden]，
+/* 未打开时真正隐藏：否则 display:grid 会覆盖 [hidden]，
    透明遮罩仍铺满全屏截获点击，导致照片点不动 */
 .lightbox[hidden] {
   display: none;
 }
 
-.lb-stage {
+/* 相框：复用照片墙全屏预览的白边 + 胶带外观（.photo-lightbox-frame） */
+.lb-frame {
   position: relative;
+  width: min(920px, 92vw);
+  max-height: 88dvh;
   margin: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  max-width: min(90vw, 900px);
-  max-height: 86vh;
-  transform: scale(0.94);
+  padding: clamp(12px, 1.8vw, 18px) clamp(12px, 1.8vw, 18px) clamp(48px, 5vw, 66px);
+  background: rgba(255, 253, 247, 0.96);
+  border: 1px solid rgba(83, 73, 62, 0.22);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.82) inset,
+    0 24px 64px rgba(28, 22, 17, 0.28);
+  transform: rotate(-1.1deg) scale(0.94);
   transition: transform 300ms cubic-bezier(0.22, 0.61, 0.36, 1);
 }
-.lightbox.open .lb-stage {
-  transform: scale(1);
+.lightbox.open .lb-frame {
+  transform: rotate(-1.1deg) scale(1);
 }
 
-/* 加载指示器：居中于舞台，图片就绪后淡出 */
+.lb-frame::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: -14px;
+  width: 84px;
+  height: 28px;
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.18), transparent 35% 65%, rgba(255, 255, 255, 0.12)),
+    var(--tape);
+  transform: translateX(-50%) rotate(2.5deg);
+  box-shadow: 0 1px 3px rgba(110, 79, 42, 0.16);
+  z-index: 2;
+}
+
+/* 加载指示器：居中于相框，图片就绪后淡出 */
 .lb-spinner {
   position: absolute;
   top: 50%;
@@ -1300,21 +1331,19 @@ h3 span,
   width: 40px;
   height: 40px;
   margin: -20px 0 0 -20px;
-  border: 3px solid rgba(255, 249, 241, 0.25);
-  border-top-color: rgba(255, 249, 241, 0.9);
+  border: 3px solid rgba(83, 73, 62, 0.2);
+  border-top-color: rgba(83, 73, 62, 0.8);
   border-radius: 50%;
   opacity: 0;
   pointer-events: none;
   animation: lb-spin 0.7s linear infinite;
+  z-index: 1;
 }
-.lb-stage.is-loading .lb-spinner {
+.lb-frame.is-loading .lb-spinner {
   opacity: 1;
 }
-.lb-stage.is-loading .lb-img {
+.lb-frame.is-loading .lb-img {
   opacity: 0.25;
-}
-.lb-img {
-  transition: opacity 200ms ease;
 }
 
 @keyframes lb-spin {
@@ -1322,43 +1351,67 @@ h3 span,
 }
 
 .lb-img {
-  max-width: 100%;
-  max-height: 78vh;
+  display: block;
+  width: 100%;
+  max-height: calc(88dvh - 132px);
   object-fit: contain;
-  border-radius: 3px;
-  background: var(--paper, #fff9f1);
-  padding: 10px 10px 44px; /* polaroid 白边 */
-  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.45);
+  background: rgba(235, 222, 206, 0.35);
+  transition: opacity 200ms ease;
 }
 
 .lb-caption {
-  margin-top: 14px;
-  color: rgba(255, 249, 241, 0.9);
+  position: absolute;
+  left: clamp(18px, 2.2vw, 26px);
+  right: clamp(18px, 2.2vw, 26px);
+  bottom: clamp(14px, 1.8vw, 22px);
+  margin: 0;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 18px;
+  color: #4d443c;
   font-family: "Laura Cursive", "STKaiti", "KaiTi", serif;
-  font-size: 16px;
+  font-size: clamp(18px, 2vw, 26px);
+  font-weight: 600;
   letter-spacing: 1px;
   min-height: 20px;
 }
 
-.lb-nav,
-.lb-close {
+.lb-date {
+  color: var(--rose);
+  letter-spacing: 1px;
+  white-space: nowrap;
+}
+
+.lb-title {
+  flex: 1;
+  text-align: left;
+}
+
+/* 多图计数器：靠右，弱化处理 */
+.lb-counter {
+  color: rgba(77, 68, 60, 0.6);
+  font-size: 0.72em;
+  letter-spacing: 1px;
+  white-space: nowrap;
+}
+.lb-counter:empty {
+  display: none;
+}
+
+.lb-nav {
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
   flex: none;
   box-sizing: border-box;
   display: grid;
   place-items: center;
   padding: 0;
   border: none;
-  background: rgba(255, 249, 241, 0.12);
-  color: #fff9f1;
   cursor: pointer;
   border-radius: 999px;
   transition: background 160ms ease, transform 160ms ease;
-}
-.lb-close:hover {
-  background: rgba(255, 249, 241, 0.28);
-}
-
-.lb-nav {
   width: 52px;
   height: 52px;
   background: #e9ded0;
@@ -1366,41 +1419,84 @@ h3 span,
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
   font-size: 30px;
   line-height: 1;
+  z-index: 81;
 }
+.lb-prev { left: clamp(12px, 3vw, 34px); }
+.lb-next { right: clamp(12px, 3vw, 34px); }
 .lb-nav:hover {
   background: var(--paper);
 }
-.lb-nav:active { transform: scale(0.9); }
+.lb-nav:active { transform: translateY(-50%) scale(0.9); }
+/* JS 用 hidden 属性隐藏单张照片的左右切换，需覆盖上面的 display: grid */
+.lb-nav[hidden] { display: none; }
 
+/* 复用照片墙全屏预览的关闭按钮样式（手绘感不规则圆角 + 米色描边） */
 .lb-close {
-  position: absolute;
-  top: clamp(12px, 3vw, 28px);
-  right: clamp(12px, 3vw, 28px);
+  position: fixed;
+  top: clamp(18px, 3vw, 34px);
+  right: clamp(18px, 3vw, 38px);
+  z-index: 81;
+  box-sizing: border-box;
   flex-shrink: 0;
   width: 44px;
   height: 44px;
   min-width: 44px;
   min-height: 44px;
   aspect-ratio: 1;
-  font-size: 30px;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  color: var(--ink);
+  font-family: "Laura Cursive", "STKaiti", "KaiTi", serif;
+  font-size: 34px;
   line-height: 1;
+  border: 2px solid var(--ink);
+  border-radius: 55% 45% 52% 48% / 48% 56% 44% 52%;
+  background: rgba(255, 253, 247, 0.92);
+  cursor: pointer;
+}
+.lb-close:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 3px;
 }
 
 @media (max-width: 620px) {
+  .lb-frame {
+    width: 94vw;
+    max-height: 92dvh;
+    padding-bottom: 76px;
+    transform: rotate(0deg) scale(0.94);
+  }
+  .lightbox.open .lb-frame {
+    transform: rotate(0deg) scale(1);
+  }
+  .lb-img {
+    max-height: calc(92dvh - 140px);
+  }
+  .lb-caption {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .lb-title {
+    text-align: left;
+  }
   .lb-nav {
     position: absolute;
+    top: auto;
     bottom: 20px;
+    transform: none;
     width: 46px;
     height: 46px;
   }
   .lb-prev { left: 20px; }
   .lb-next { right: 20px; }
-  .lb-img { max-height: 68vh; }
+  .lb-nav:active { transform: scale(0.9); }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .lightbox,
-  .lb-stage,
+  .lb-frame,
   .photo-stack[data-lightbox] {
     transition: none;
   }
@@ -1697,8 +1793,13 @@ h3 span,
 
   .photo-lightbox-frame {
     width: 94vw;
+    max-height: 92dvh;
     padding-bottom: 76px;
     transform: rotate(0deg);
+  }
+
+  .photo-lightbox-frame img {
+    max-height: calc(92dvh - 140px);
   }
 
   .photo-lightbox-frame figcaption {

@@ -52,53 +52,87 @@ const { photos } = Astro.props;
 </div>
 
 <script>
-  const lightbox = document.querySelector("[data-photo-lightbox]");
-  const lightboxImage = document.querySelector("[data-photo-lightbox-image]");
-  const lightboxDate = document.querySelector("[data-photo-lightbox-date]");
-  const lightboxTitle = document.querySelector("[data-photo-lightbox-title]");
-  const closeButton = document.querySelector("[data-photo-close]");
-  const openButtons = document.querySelectorAll("[data-photo-open]");
+  function initPhotoLightbox() {
+    const lightbox = document.querySelector("[data-photo-lightbox]");
+    // 遮罩每次导航都会被换成新节点：已绑定过的直接跳过，避免重复挂载
+    if (!(lightbox instanceof HTMLElement) || lightbox.dataset.bound) return;
+    lightbox.dataset.bound = "1";
 
-  const closeLightbox = () => {
-    if (!(lightbox instanceof HTMLElement)) return;
+    const lightboxImage = lightbox.querySelector("[data-photo-lightbox-image]");
+    const lightboxDate = lightbox.querySelector("[data-photo-lightbox-date]");
+    const lightboxTitle = lightbox.querySelector("[data-photo-lightbox-title]");
+    const closeButton = lightbox.querySelector("[data-photo-close]");
+    const openButtons = document.querySelectorAll("[data-photo-open]");
 
-    lightbox.hidden = true;
-    document.documentElement.classList.remove("has-photo-lightbox");
-  };
+    let savedScrollY = 0;
 
-  openButtons.forEach((button) => {
-    button.addEventListener("click", () => {
-      if (
-        !(lightbox instanceof HTMLElement) ||
-        !(lightboxImage instanceof HTMLImageElement) ||
-        !(lightboxDate instanceof HTMLElement) ||
-        !(lightboxTitle instanceof HTMLElement) ||
-        !(button instanceof HTMLElement)
-      ) {
-        return;
-      }
+    const closeLightbox = () => {
+      lightbox.hidden = true;
+      document.documentElement.classList.remove("has-photo-lightbox");
+      // 解除 body 固定并恢复滚动位置（见 CSS 中的 has-photo-lightbox 规则）。
+      // 临时关掉 scroll-behavior:smooth，否则会从顶部平滑滚动、定位不准。
+      document.body.style.top = "";
+      const html = document.documentElement;
+      const prevBehavior = html.style.scrollBehavior;
+      html.style.scrollBehavior = "auto";
+      window.scrollTo(0, savedScrollY);
+      html.style.scrollBehavior = prevBehavior;
+    };
 
-      lightboxImage.src = button.dataset.photoSrc ?? "";
-      lightboxImage.alt = button.dataset.photoAlt ?? "";
-      lightboxDate.textContent = button.dataset.photoDate ?? "";
-      lightboxTitle.textContent = button.dataset.photoTitle ?? "";
-      lightbox.hidden = false;
-      document.documentElement.classList.add("has-photo-lightbox");
-      closeButton instanceof HTMLElement && closeButton.focus();
+    openButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        if (
+          !(lightboxImage instanceof HTMLImageElement) ||
+          !(lightboxDate instanceof HTMLElement) ||
+          !(lightboxTitle instanceof HTMLElement) ||
+          !(button instanceof HTMLElement)
+        ) {
+          return;
+        }
+
+        lightboxImage.src = button.dataset.photoSrc ?? "";
+        lightboxImage.alt = button.dataset.photoAlt ?? "";
+        lightboxDate.textContent = button.dataset.photoDate ?? "";
+        lightboxTitle.textContent = button.dataset.photoTitle ?? "";
+        lightbox.hidden = false;
+        // 固定 body 防止移动端触摸滚动穿透（记录并锁定当前滚动位置）
+        savedScrollY = window.scrollY;
+        document.body.style.top = `-${savedScrollY}px`;
+        document.documentElement.classList.add("has-photo-lightbox");
+        closeButton instanceof HTMLElement && closeButton.focus();
+      });
     });
-  });
 
-  closeButton?.addEventListener("click", closeLightbox);
+    closeButton?.addEventListener("click", closeLightbox);
 
-  lightbox?.addEventListener("click", (event) => {
-    if (event.target === lightbox) {
-      closeLightbox();
-    }
-  });
+    lightbox.addEventListener("click", (event) => {
+      if (event.target === lightbox) {
+        closeLightbox();
+      }
+    });
+  }
 
-  document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape") {
-      closeLightbox();
-    }
-  });
+  // Esc 关闭：只在 document 上绑定一次，动态查当前遮罩，避免多次导航后监听泄漏
+  if (!document.body.dataset.photoLightboxEsc) {
+    document.body.dataset.photoLightboxEsc = "1";
+    document.addEventListener("keydown", (event) => {
+      if (event.key !== "Escape") return;
+      const lb = document.querySelector("[data-photo-lightbox]");
+      if (lb instanceof HTMLElement && !lb.hidden) {
+        lb.hidden = true;
+        document.documentElement.classList.remove("has-photo-lightbox");
+        // 与 closeLightbox 一致：解除 body 固定并恢复滚动位置
+        const y = Math.abs(parseInt(document.body.style.top || "0", 10)) || 0;
+        document.body.style.top = "";
+        const html = document.documentElement;
+        const prevBehavior = html.style.scrollBehavior;
+        html.style.scrollBehavior = "auto";
+        window.scrollTo(0, y);
+        html.style.scrollBehavior = prevBehavior;
+      }
+    });
+  }
+
+  initPhotoLightbox();
+  document.addEventListener("astro:page-load", initPhotoLightbox);
 </script>
