@@ -1186,21 +1186,156 @@ h3 span,
 .photo-stack .stack-2 { z-index: 2; transform: rotate(-5.5deg) translate(-3px, 4px); }
 .photo-stack .stack-3 { z-index: 1; transform: rotate(4deg)   translate(4px, -3px); }
 
-/* 超出 3 张时右下角显示的计数 */
+/* 可点击进入 lightbox 的照片 */
+[data-lightbox] {
+  cursor: pointer;
+}
+
+[data-lightbox]:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+
+.photo-stack[data-lightbox] {
+  transition: transform 200ms ease;
+}
+.photo-stack[data-lightbox]:hover {
+  transform: translateY(-3px) scale(1.02);
+}
+
+/* 右下角照片数量标签 */
 .stack-count {
   position: absolute;
   right: -6px;
   bottom: 6px;
   z-index: 4;
-  padding: 1px 7px 2px;
-  background: rgba(255, 249, 241, 0.92);
-  border: 1px solid rgba(110, 96, 78, 0.28);
+  padding: 1px 8px 2px;
+  background: rgba(255, 249, 241, 0.95);
+  border: 1px solid rgba(110, 96, 78, 0.32);
   border-radius: 999px;
   color: var(--soft-ink);
+  font-family: "Laura Cursive", "STKaiti", "KaiTi", serif;
   font-size: 13px;
   font-weight: 700;
   letter-spacing: 0.5px;
   pointer-events: none;
+}
+
+/* ── Lightbox 大图查看 ─────────────────────────────────────────────────────── */
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: clamp(16px, 4vw, 48px);
+  background: rgba(38, 30, 22, 0);
+  backdrop-filter: blur(0px);
+  opacity: 0;
+  transition: opacity 260ms ease, background 260ms ease, backdrop-filter 260ms ease;
+}
+
+.lightbox.open {
+  opacity: 1;
+  background: rgba(38, 30, 22, 0.82);
+  backdrop-filter: blur(4px);
+}
+
+/* 未打开时真正隐藏：否则 display:flex 会覆盖 [hidden]，
+   透明遮罩仍铺满全屏截获点击，导致照片点不动 */
+.lightbox[hidden] {
+  display: none;
+}
+
+.lb-stage {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: min(90vw, 900px);
+  max-height: 86vh;
+  transform: scale(0.94);
+  transition: transform 300ms cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+.lightbox.open .lb-stage {
+  transform: scale(1);
+}
+
+.lb-img {
+  max-width: 100%;
+  max-height: 78vh;
+  object-fit: contain;
+  border-radius: 3px;
+  background: var(--paper, #fff9f1);
+  padding: 10px 10px 44px; /* polaroid 白边 */
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.45);
+}
+
+.lb-caption {
+  margin-top: 14px;
+  color: rgba(255, 249, 241, 0.9);
+  font-family: "Laura Cursive", "STKaiti", "KaiTi", serif;
+  font-size: 16px;
+  letter-spacing: 1px;
+  min-height: 20px;
+}
+
+.lb-nav,
+.lb-close {
+  flex: none;
+  display: grid;
+  place-items: center;
+  border: none;
+  background: rgba(255, 249, 241, 0.12);
+  color: #fff9f1;
+  cursor: pointer;
+  border-radius: 999px;
+  transition: background 160ms ease, transform 160ms ease;
+}
+.lb-nav:hover,
+.lb-close:hover {
+  background: rgba(255, 249, 241, 0.28);
+}
+
+.lb-nav {
+  width: 52px;
+  height: 52px;
+  font-size: 30px;
+  line-height: 1;
+}
+.lb-nav:active { transform: scale(0.9); }
+
+.lb-close {
+  position: absolute;
+  top: clamp(12px, 3vw, 28px);
+  right: clamp(12px, 3vw, 28px);
+  width: 44px;
+  height: 44px;
+  font-size: 30px;
+  line-height: 1;
+}
+
+@media (max-width: 620px) {
+  .lb-nav {
+    position: absolute;
+    bottom: 20px;
+    width: 46px;
+    height: 46px;
+  }
+  .lb-prev { left: 20px; }
+  .lb-next { right: 20px; }
+  .lb-img { max-height: 68vh; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lightbox,
+  .lb-stage,
+  .photo-stack[data-lightbox] {
+    transition: none;
+  }
 }
 
 .footer-brand p {
