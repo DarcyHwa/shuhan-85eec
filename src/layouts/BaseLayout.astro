@@ -14,6 +14,13 @@ const {
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content={description} />
     <link rel="icon" type="image/png" href="/favicon.png" />
+    <link
+      rel="preload"
+      href="/fonts/Laura-Cursive-subset.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
     <title>{title}</title>
     <ClientRouter fallback="animate" />
     <script is:inline>
@@ -33,7 +40,19 @@ const {
 
         const timer = setTimeout(finish, MAX_WAIT_MS);
 
-        document.fonts.ready.then(() => {
+        // 骨架屏把文字设为透明，浏览器会认为没有可见字形需要该字体，
+        // 于是根本不去下载它，document.fonts.ready 立刻 resolve → 骨架屏提前移除、
+        // 露出回退字体，随后 web 字体才加载并替换，造成字体闪烁。
+        // 这里显式触发字体下载，并等待「该字体」真正就绪。
+        const fontsReady =
+          document.fonts && typeof document.fonts.load === "function"
+            ? document.fonts
+                .load('1em "Laura Cursive"')
+                .catch(() => {})
+                .then(() => document.fonts.ready)
+            : Promise.resolve();
+
+        fontsReady.then(() => {
           clearTimeout(timer);
           // 双 rAF：确保浏览器已用新字体完成首帧绘制，再移除骨架屏
           requestAnimationFrame(() => requestAnimationFrame(finish));
