@@ -1,10 +1,10 @@
 ---
 order: 1
-date: 2024.9.15
+date: 2025.9.12
 title: 我们的初相识
-image: /assets/photos/meet.jpg
+images:
+  - /assets/photos/meet.jpg
 alt: 在上课
 side: left
 tilt: tilt-left
 ---
-

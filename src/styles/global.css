@@ -1163,6 +1163,46 @@ h3 span,
   color: var(--rose);
 }
 
+/* ── 时间线多图堆叠 ────────────────────────────────────────────────────────── */
+.photo-stack {
+  position: relative;
+  flex: 0 0 158px;
+  width: 158px;
+}
+
+.photo-stack .small-photo {
+  flex: none;
+  width: 158px;
+}
+
+/* 第2、3张绝对定位叠在第1张后面 */
+.photo-stack .stack-item:not(.stack-1) {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.photo-stack .stack-1 { position: relative; z-index: 3; }
+.photo-stack .stack-2 { z-index: 2; transform: rotate(-5.5deg) translate(-3px, 4px); }
+.photo-stack .stack-3 { z-index: 1; transform: rotate(4deg)   translate(4px, -3px); }
+
+/* 超出 3 张时右下角显示的计数 */
+.stack-count {
+  position: absolute;
+  right: -6px;
+  bottom: 6px;
+  z-index: 4;
+  padding: 1px 7px 2px;
+  background: rgba(255, 249, 241, 0.92);
+  border: 1px solid rgba(110, 96, 78, 0.28);
+  border-radius: 999px;
+  color: var(--soft-ink);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  pointer-events: none;
+}
+
 .footer-brand p {
   margin: 0;
   color: #53493f;

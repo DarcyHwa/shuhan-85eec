@@ -6,7 +6,7 @@ interface TimelineCard {
     data: {
       side: "left" | "right";
       tilt: string;
-      image: string;
+      images: string[];
       alt: string;
       date: string;
       title: string;
@@ -20,6 +20,9 @@ interface Props {
 }
 
 const { timelineCards } = Astro.props;
+
+// 堆叠时最多显示 3 张
+const STACK_LIMIT = 3;
 ---
 
 <section id="timeline" class="timeline-section">
@@ -30,37 +33,66 @@ const { timelineCards } = Astro.props;
     <span class="node n3"></span>
   </div>
 
-  {timelineCards.map(({ entry, Content }, index) => (
-    <article class={`event event-${entry.data.side} event-${index + 1}`}>
-      {entry.data.side === "left" ? (
-        <>
-          <figure class={`polaroid small-photo ${entry.data.tilt}`}>
-            <span class="tape tape-corner-left"></span>
-            <img src={entry.data.image} alt={entry.data.alt} decoding="async" loading="lazy" />
-            <figcaption><span>♡</span></figcaption>
+  {timelineCards.map(({ entry, Content }, index) => {
+    const { images, alt, side, tilt, date, title } = entry.data;
+    const stackImgs = images.slice(0, STACK_LIMIT);
+    const hasStack = stackImgs.length > 1;
+
+    const photoBlock = (tapeSide: "left" | "right") => (
+      <div class={hasStack ? `photo-stack ${tilt}` : ""}>
+        {stackImgs.map((src, i) => (
+          <figure
+            class={[
+              "polaroid small-photo",
+              !hasStack ? tilt : "",
+              hasStack ? `stack-item stack-${i + 1}` : "",
+            ].filter(Boolean).join(" ")}
+            aria-hidden={i > 0 ? "true" : undefined}
+          >
+            {i === 0 && (
+              <span class={`tape tape-corner-${tapeSide}`}></span>
+            )}
+            <img
+              src={src}
+              alt={i === 0 ? alt : ""}
+              decoding="async"
+              loading="lazy"
+            />
+            {i === 0 && <figcaption><span>♡</span></figcaption>}
           </figure>
-          <div class="memory-card">
-            <time>{entry.data.date}</time>
-            <h3>{entry.data.title} <span>♡</span></h3>
-            <Content />
-          </div>
-        </>
-      ) : (
-        <>
-          <div class="memory-card">
-            <time>{entry.data.date}</time>
-            <h3>{entry.data.title} <span>♡</span></h3>
-            <Content />
-          </div>
-          <figure class={`polaroid small-photo ${entry.data.tilt}`}>
-            <span class="tape tape-corner-right"></span>
-            <img src={entry.data.image} alt={entry.data.alt} decoding="async" loading="lazy" />
-            <figcaption><span>♡</span></figcaption>
-          </figure>
-        </>
-      )}
-    </article>
-  ))}
+        ))}
+        {images.length > STACK_LIMIT && (
+          <span class="stack-count" aria-label={`共 ${images.length} 张`}>
+            +{images.length - STACK_LIMIT}
+          </span>
+        )}
+      </div>
+    );
+
+    return (
+      <article class={`event event-${side} event-${index + 1}`}>
+        {side === "left" ? (
+          <>
+            {photoBlock("left")}
+            <div class="memory-card">
+              <time>{date}</time>
+              <h3>{title} <span>♡</span></h3>
+              <Content />
+            </div>
+          </>
+        ) : (
+          <>
+            <div class="memory-card">
+              <time>{date}</time>
+              <h3>{title} <span>♡</span></h3>
+              <Content />
+            </div>
+            {photoBlock("right")}
+          </>
+        )}
+      </article>
+    );
+  })}
 
   <p class="future">
     未来的每一天，<br />

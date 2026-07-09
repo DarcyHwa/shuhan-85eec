@@ -11,12 +11,15 @@ const timelineEntries = (await getCollection("timeline")).sort(
   (a, b) => a.data.order - b.data.order,
 );
 
-const photos = timelineEntries.map((entry) => ({
-  image: entry.data.image,
-  alt: entry.data.alt,
-  date: entry.data.date,
-  title: entry.data.title,
-}));
+// 每张图片独立成一个照片墙格子
+const photos = timelineEntries.flatMap((entry) =>
+  entry.data.images.map((src) => ({
+    image: src,
+    alt: entry.data.alt,
+    date: entry.data.date,
+    title: entry.data.title,
+  }))
+);
 ---
 
 <BaseLayout title="照片墙 | Our Story" description="收藏我们一路走来的照片瞬间。">
