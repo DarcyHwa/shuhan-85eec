@@ -4,6 +4,7 @@
 
 [![GitHub Repo](https://img.shields.io/badge/GitHub-huey1in%2FOurStory-181717?logo=github)](https://github.com/huey1in/OurStory)
 ![Astro](https://img.shields.io/badge/Astro-7.x-ff5d01?logo=astro&logoColor=white)
+<a href="https://linux.do"><img src="https://img.shields.io/badge/LINUX%20DO-社区-f0b752?style=flat-square" alt="LINUX DO"></a>
 ![Netlify](https://img.shields.io/badge/deploy-Netlify-00c7b7?logo=netlify&logoColor=white)
 
 体验地址：[zhlyxh.com](https://zhlyxh.com)
