@@ -4,7 +4,7 @@ export const siteConfig = {
   copyright: "© 2026 zhlyxh.com All rights reserved.",
   heroMedia: {
     image: "/assets/photos/2026_06_17_17_49_59_IMG_9752.JPG",
-    caption: "2025.6.17"
+    caption: "2026.6.17"
   },
   relationship: {
     startDate: "2025-9-12",
