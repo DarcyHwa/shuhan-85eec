@@ -7,11 +7,9 @@ import SiteFooter from "../components/SiteFooter.astro";
 import SiteHeader from "../components/SiteHeader.astro";
 import "../styles/global.css";
 
-const TIMELINE_DISPLAY_LIMIT = 3;
-
 const timelineEntries = (await getCollection("timeline")).sort(
   (a, b) => a.data.order - b.data.order,
-).slice(0, TIMELINE_DISPLAY_LIMIT);
+);
 
 // 每张图片独立成一个照片墙格子
 const photos = timelineEntries.flatMap((entry) =>

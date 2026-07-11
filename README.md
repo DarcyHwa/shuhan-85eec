@@ -18,7 +18,7 @@
 - 移动端导航：小屏幕使用汉堡菜单。
 - 页面切换：使用 Astro `ClientRouter`，并在切换前预热目标页面图片。
 - 视觉风格：纸张背景、拍立得照片、胶带、手绘圈选中状态、Laura Cursive 字体。
-- 品牌资源：站点 Logo 使用 `public/assets/logo.png`，浏览器标签图标使用 `public/favicon.png`。
+- 品牌资源：站点 Logo 使用 `public/assets/logo.png`。
 
 ## 开发
 
