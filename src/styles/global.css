@@ -218,6 +218,13 @@ svg {
   font-weight: 700;
 }
 
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: clamp(18px, 2.4vw, 30px);
+}
+
 .brand {
   position: relative;
   flex: 0 0 auto;
@@ -237,6 +244,131 @@ svg {
 .brand-link {
   color: var(--ink);
   text-decoration: none;
+}
+
+@keyframes music-record-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.music-toggle {
+  position: relative;
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  padding: 0;
+  color: var(--ink);
+  border: 2px solid rgba(33, 31, 27, 0.88);
+  border-radius: 52% 48% 45% 55% / 48% 55% 45% 52%;
+  background: rgba(255, 253, 247, 0.5);
+  box-shadow: 0 5px 12px rgba(83, 61, 42, 0.08);
+  cursor: pointer;
+  transition:
+    transform 160ms ease,
+    background-color 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.music-toggle:hover {
+  background: rgba(255, 253, 247, 0.9);
+  box-shadow: 0 7px 15px rgba(83, 61, 42, 0.13);
+  transform: translateY(-1px) rotate(-2deg);
+}
+
+.music-toggle:active {
+  transform: translateY(1px) scale(0.96);
+}
+
+.music-toggle:focus-visible {
+  outline: 2px solid var(--rose);
+  outline-offset: 4px;
+}
+
+.music-record {
+  position: relative;
+  display: block;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, transparent 0 3px, rgba(248, 239, 228, 0.22) 3.5px 4.5px, transparent 5px 8px, rgba(248, 239, 228, 0.13) 8.5px 9.5px, transparent 10px 12px, rgba(248, 239, 228, 0.11) 12.5px 13.5px, transparent 14px),
+    conic-gradient(from 25deg, #26231f, #090908, #312d27, #11100e, #26231f);
+  box-shadow:
+    0 1px 1px rgba(255, 255, 255, 0.16) inset,
+    0 2px 5px rgba(40, 31, 24, 0.24);
+  animation: music-record-spin 3.2s linear infinite;
+  animation-play-state: paused;
+}
+
+.music-toggle[data-playing="true"] .music-record {
+  animation-play-state: running;
+}
+
+.music-record-label {
+  position: absolute;
+  inset: 11px;
+  border: 1px solid rgba(255, 250, 243, 0.58);
+  border-radius: 50%;
+  background: var(--rose);
+  box-shadow: 0 0 0 1px rgba(74, 48, 42, 0.2);
+}
+
+.music-record-label::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--paper);
+  transform: translate(-50%, -50%);
+}
+
+.music-status {
+  position: absolute;
+  right: -3px;
+  bottom: -2px;
+  width: 16px;
+  height: 16px;
+  border: 1px solid rgba(33, 31, 27, 0.65);
+  border-radius: 50%;
+  background: var(--paper);
+  box-shadow: 0 2px 5px rgba(40, 31, 24, 0.2);
+}
+
+.music-status::before {
+  content: "";
+  position: absolute;
+  left: 5px;
+  top: 4px;
+  width: 0;
+  height: 0;
+  border-top: 4px solid transparent;
+  border-bottom: 4px solid transparent;
+  border-left: 6px solid var(--ink);
+}
+
+.music-toggle[data-playing="true"] .music-status::before,
+.music-toggle[data-playing="true"] .music-status::after {
+  content: "";
+  position: absolute;
+  top: 4px;
+  width: 2px;
+  height: 8px;
+  border: 0;
+  background: var(--ink);
+}
+
+.music-toggle[data-playing="true"] .music-status::before {
+  left: 5px;
+}
+
+.music-toggle[data-playing="true"] .music-status::after {
+  right: 5px;
 }
 
 .menu-toggle {
@@ -1526,6 +1658,10 @@ h3 span,
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .music-record {
+    animation: none;
+  }
+
   .lightbox,
   .lb-frame,
   .photo-stack[data-lightbox] {
@@ -1581,6 +1717,11 @@ h3 span,
     align-items: flex-start;
     flex-direction: column;
     gap: 18px;
+  }
+
+  .topbar-actions {
+    width: 100%;
+    justify-content: flex-start;
   }
 
   .nav {
@@ -1681,9 +1822,17 @@ h3 span,
 
   .topbar {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-columns: minmax(0, 1fr) auto auto;
     align-items: center;
     gap: 14px;
+  }
+
+  .topbar-actions {
+    display: contents;
+  }
+
+  .music-toggle {
+    justify-self: end;
   }
 
   .menu-toggle {

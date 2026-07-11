@@ -15,18 +15,44 @@ const navItems = [
   <a class="brand brand-link" href="/" aria-label="LiuShuhan & HuaSong 首页">
     <span class="brand-text">LiuShuhan & HuaSong</span>
   </a>
-  <button class="menu-toggle" type="button" aria-label="打开导航菜单" aria-expanded="false" aria-controls="site-nav">
-    <span></span>
-    <span></span>
-    <span></span>
-  </button>
-  <nav id="site-nav" class="nav" aria-label="页面导航">
-    {navItems.map((item) => (
-      <a class:list={["nav-link", `nav-${item.key}`, { active: active === item.key }]} href={item.href}>
-        <span class="nav-label">{item.label}</span>
-      </a>
-    ))}
-  </nav>
+  <div class="topbar-actions">
+    <button
+      class="music-toggle"
+      type="button"
+      aria-label="播放背景音乐"
+      aria-pressed="false"
+      title="播放背景音乐"
+      data-playing="false"
+    >
+      <span class="music-record" aria-hidden="true">
+        <span class="music-record-label"></span>
+      </span>
+      <span class="music-status" aria-hidden="true"></span>
+    </button>
+    <button class="menu-toggle" type="button" aria-label="打开导航菜单" aria-expanded="false" aria-controls="site-nav">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+    <nav id="site-nav" class="nav" aria-label="页面导航">
+      {navItems.map((item) => (
+        <a class:list={["nav-link", `nav-${item.key}`, { active: active === item.key }]} href={item.href}>
+          <span class="nav-label">{item.label}</span>
+        </a>
+      ))}
+    </nav>
+  </div>
+
+  <audio
+    id="background-music"
+    src="/music.mp3"
+    preload="auto"
+    autoplay
+    loop
+    playsinline
+    hidden
+    transition:persist="background-music"
+  ></audio>
 </header>
 
 <script>
@@ -53,6 +79,115 @@ const navItems = [
       siteNav.classList.toggle("is-open", nextExpanded);
     });
   }
+
+  const getMusicElements = () => {
+    const audio = document.querySelector("#background-music");
+    const button = document.querySelector(".music-toggle");
+
+    return {
+      audio: audio instanceof HTMLAudioElement ? audio : null,
+      button: button instanceof HTMLButtonElement ? button : null,
+    };
+  };
+
+  const syncMusicButton = () => {
+    const { audio, button } = getMusicElements();
+
+    if (!audio || !button) {
+      return;
+    }
+
+    const isPlaying = !audio.paused && !audio.ended;
+    const label = isPlaying ? "暂停背景音乐" : "播放背景音乐";
+
+    button.dataset.playing = String(isPlaying);
+    button.setAttribute("aria-pressed", String(isPlaying));
+    button.setAttribute("aria-label", label);
+    button.title = label;
+  };
+
+  const bindMusicEvents = () => {
+    const { audio } = getMusicElements();
+
+    if (!audio || audio.dataset.eventsReady) {
+      syncMusicButton();
+      return;
+    }
+
+    audio.dataset.eventsReady = "true";
+    audio.addEventListener("play", syncMusicButton);
+    audio.addEventListener("pause", syncMusicButton);
+    audio.addEventListener("ended", syncMusicButton);
+    audio.addEventListener("error", syncMusicButton);
+    syncMusicButton();
+  };
+
+  const tryAutoplayMusic = async () => {
+    const { audio } = getMusicElements();
+
+    if (!audio || document.documentElement.dataset.musicUserPaused === "true") {
+      syncMusicButton();
+      return;
+    }
+
+    try {
+      await audio.play();
+    } catch {
+      // 浏览器可能会在用户首次交互前拦截有声自动播放。
+      syncMusicButton();
+    }
+  };
+
+  if (!document.documentElement.dataset.musicControlsReady) {
+    document.documentElement.dataset.musicControlsReady = "true";
+
+    document.addEventListener("click", async (event) => {
+      const button = event.target instanceof Element ? event.target.closest(".music-toggle") : null;
+
+      if (!(button instanceof HTMLButtonElement)) {
+        return;
+      }
+
+      const { audio } = getMusicElements();
+
+      if (!audio) {
+        return;
+      }
+
+      if (audio.paused) {
+        document.documentElement.dataset.musicUserPaused = "false";
+
+        try {
+          await audio.play();
+        } catch {
+          syncMusicButton();
+        }
+      } else {
+        document.documentElement.dataset.musicUserPaused = "true";
+        audio.pause();
+      }
+    });
+
+    const unlockMusic = (event: Event) => {
+      const target = event.target;
+
+      if (target instanceof Element && target.closest(".music-toggle")) {
+        return;
+      }
+
+      void tryAutoplayMusic();
+    };
+
+    document.addEventListener("pointerdown", unlockMusic, { once: true, capture: true });
+    document.addEventListener("keydown", unlockMusic, { once: true, capture: true });
+    document.addEventListener("astro:page-load", () => {
+      bindMusicEvents();
+      void tryAutoplayMusic();
+    });
+  }
+
+  bindMusicEvents();
+  void tryAutoplayMusic();
 
   document.addEventListener("astro:before-swap", () => {
     const menuButton = document.querySelector(".menu-toggle");
