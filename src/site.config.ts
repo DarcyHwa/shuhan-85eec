@@ -3,11 +3,13 @@ const dayMs = 24 * 60 * 60 * 1000;
 export const siteConfig = {
   copyright: "© 2026 zhlyxh.com All rights reserved.",
   heroMedia: {
-    image: "/assets/photos/2026_06_17_17_49_59_IMG_9752.JPG",
-    caption: "2026.6.17"
+    // 首页头图使用独立配置；暂时留空时由 HomeHero 显示占位框。
+    image: "/assets/home_page-first.jpg",
+    imageAlt: "两个人牵手的照片",
+    caption: "",
   },
   relationship: {
-    startDate: "2025-9-12",
+    startDate: "2025-3-15",
   },
 } as const;
 

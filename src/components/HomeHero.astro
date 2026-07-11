@@ -3,6 +3,7 @@ import { getTogetherDays, siteConfig } from "../site.config";
 
 const togetherDays = getTogetherDays();
 const heroMedia = siteConfig.heroMedia;
+const hasHeroImage = heroMedia.image.trim().length > 0;
 const heroFlowerImage = "/assets/illustrations/flower-sprig.png";
 ---
 
@@ -36,10 +37,17 @@ const heroFlowerImage = "/assets/illustrations/flower-sprig.png";
   </div>
 
   <div class="hero-media-stack">
-    <figure class="polaroid hero-photo rotate-hero">
+    <figure class:list={["polaroid hero-photo rotate-hero", { "hero-photo-empty": !hasHeroImage }]}>
       <span class="tape tape-top"></span>
-      <img src={heroMedia.image} alt={heroMedia.imageAlt} decoding="async" fetchpriority="high" />
-      <figcaption>{heroMedia.caption} <span>♡</span></figcaption>
+      {hasHeroImage ? (
+        <img src={heroMedia.image} alt={heroMedia.imageAlt} decoding="async" fetchpriority="high" />
+      ) : (
+        <div class="hero-photo-placeholder" role="img" aria-label="首页专属照片暂未添加">
+          <span aria-hidden="true">♡</span>
+          <p>专属照片待添加</p>
+        </div>
+      )}
+      {heroMedia.caption && <figcaption>{heroMedia.caption} <span>♡</span></figcaption>}
     </figure>
 
     <img class="generated-flower" src={heroFlowerImage} alt="" decoding="async" />

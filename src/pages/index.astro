@@ -8,9 +8,11 @@ import SiteHeader from "../components/SiteHeader.astro";
 import TimelineSection from "../components/TimelineSection.astro";
 import "../styles/global.css";
 
+const TIMELINE_DISPLAY_LIMIT = 3;
+
 const timelineEntries = (await getCollection("timeline")).sort(
   (a, b) => a.data.order - b.data.order,
-);
+).slice(0, TIMELINE_DISPLAY_LIMIT);
 
 const timelineCards = await Promise.all(
   timelineEntries.map(async (entry) => {
