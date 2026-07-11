@@ -27,11 +27,7 @@ const STACK_LIMIT = 3;
 <section id="timeline" class="timeline-section">
   <h2>时间线<span>♡</span></h2>
   <div class="timeline-track">
-    <div class="timeline-line" aria-hidden="true">
-      <span class="node n1"></span>
-      <span class="node n2"></span>
-      <span class="node n3"></span>
-    </div>
+    <div class="timeline-line" aria-hidden="true"></div>
 
     {timelineCards.map(({ entry, Content }, index) => {
       const { images, alt, side, tilt, date, title } = entry.data;
@@ -88,6 +84,7 @@ const STACK_LIMIT = 3;
             <>
               {photoBlock("left")}
               <div class="memory-card">
+                <span class="timeline-node" aria-hidden="true"></span>
                 <time>{date}</time>
                 <h3>{title} <span>♡</span></h3>
                 <Content />
@@ -96,6 +93,7 @@ const STACK_LIMIT = 3;
           ) : (
             <>
               <div class="memory-card">
+                <span class="timeline-node" aria-hidden="true"></span>
                 <time>{date}</time>
                 <h3>{title} <span>♡</span></h3>
                 <Content />
