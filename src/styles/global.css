@@ -2043,12 +2043,12 @@ h3 span,
 }
 
 .heart-click-particle {
-  color: var(--heart-color, var(--rose));
+  color: var(--heart-color, #ff6b9a);
   font-family: Arial, sans-serif;
   font-size: clamp(13px, 1.7vw, 20px);
   line-height: 1;
   opacity: 0;
-  text-shadow: 0 2px 5px rgba(117, 62, 59, 0.18);
+  text-shadow: 0 2px 6px rgba(255, 70, 125, 0.22);
   transform: translate(-50%, -50%) scale(0.15) rotate(0deg);
   animation: heart-firework-pop 880ms cubic-bezier(0.17, 0.67, 0.24, 1.08) var(--burst-delay, 0ms) forwards;
 }
@@ -2058,8 +2058,8 @@ h3 span,
   height: 5px;
   margin: -2.5px 0 0 -2.5px;
   border-radius: 50%;
-  background: #f0b0a4;
-  box-shadow: 0 0 0 2px rgba(240, 176, 164, 0.16);
+  background: #ff9fba;
+  box-shadow: 0 0 0 2px rgba(255, 105, 150, 0.2);
   opacity: 0;
   animation: heart-sparkle-pop 660ms ease-out var(--burst-delay, 0ms) forwards;
 }
@@ -2068,7 +2068,7 @@ h3 span,
   width: 16px;
   height: 16px;
   margin: -8px 0 0 -8px;
-  border: 2px solid rgba(217, 150, 140, 0.7);
+  border: 2px solid rgba(255, 105, 150, 0.78);
   border-radius: 50%;
   opacity: 0;
   animation: heart-ring-pop 520ms ease-out forwards;
