@@ -1,0 +1,30 @@
+---
+# 复制这个文件后，把文件名改成类似：02-date-place.md
+# 只要后缀是 .md，就会自动出现在时间线和照片墙里。
+
+# 排序，数字越小越靠前。
+order: 2
+
+# 页面显示日期，按你喜欢的格式写即可。
+date: 2024.10.12
+
+# 时间线标题。
+title: 我们的某一天
+
+# 图片路径。把照片放到 public/assets/photos/ 后，这里写 /assets/photos/文件名.jpg
+image: /assets/photos/example.jpg
+
+# 图片说明，用于无障碍访问，也方便后续维护。
+alt: 这张照片的简短描述
+
+# 时间线卡片位置：left 或 right。  左右交替
+side: right
+
+# 照片倾斜样式，可选：
+# tilt-left / tilt-left-soft / tilt-right / tilt-right-soft
+tilt: tilt-right-soft
+---
+
+这里写这一天的故事。
+
+可以写一段，也可以写多段。照片墙会自动使用上面的 `image`、`date` 和 `title`，不用单独维护。
