@@ -132,5 +132,77 @@ const {
         });
       }
     </script>
+    <script>
+      if (!document.documentElement.dataset.heartBurstReady) {
+        document.documentElement.dataset.heartBurstReady = "true";
+
+        const heartColors = ["#d67f78", "#e49a91", "#c96868", "#f0b0a4", "#b9555d"];
+
+        const createHeartBurst = (x: number, y: number) => {
+          if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+            return;
+          }
+
+          const burst = document.createElement("span");
+          burst.className = "heart-click-burst";
+          burst.setAttribute("aria-hidden", "true");
+          burst.style.left = `${x}px`;
+          burst.style.top = `${y}px`;
+
+          const ring = document.createElement("span");
+          ring.className = "heart-click-ring";
+          burst.append(ring);
+
+          for (let index = 0; index < 11; index += 1) {
+            const angle = (Math.PI * 2 * index) / 11 + (Math.random() - 0.5) * 0.32;
+            const distance = 42 + Math.random() * 48;
+            const heart = document.createElement("span");
+
+            heart.className = "heart-click-particle";
+            heart.textContent = "♥";
+            heart.style.setProperty("--burst-x", `${Math.cos(angle) * distance}px`);
+            heart.style.setProperty("--burst-y", `${Math.sin(angle) * distance}px`);
+            heart.style.setProperty("--burst-rotate", `${-55 + Math.random() * 110}deg`);
+            heart.style.setProperty("--burst-scale", `${0.72 + Math.random() * 0.62}`);
+            heart.style.setProperty("--burst-delay", `${Math.random() * 70}ms`);
+            heart.style.setProperty("--heart-color", heartColors[index % heartColors.length]);
+            burst.append(heart);
+          }
+
+          for (let index = 0; index < 7; index += 1) {
+            const angle = (Math.PI * 2 * index) / 7 + Math.random() * 0.5;
+            const distance = 24 + Math.random() * 56;
+            const sparkle = document.createElement("span");
+
+            sparkle.className = "heart-click-sparkle";
+            sparkle.style.setProperty("--burst-x", `${Math.cos(angle) * distance}px`);
+            sparkle.style.setProperty("--burst-y", `${Math.sin(angle) * distance}px`);
+            sparkle.style.setProperty("--burst-delay", `${20 + Math.random() * 90}ms`);
+            burst.append(sparkle);
+          }
+
+          document.body.append(burst);
+          window.setTimeout(() => burst.remove(), 1050);
+        };
+
+        document.addEventListener("click", (event) => {
+          if (!event.isTrusted) {
+            return;
+          }
+
+          let x = event.clientX;
+          let y = event.clientY;
+
+          // 键盘触发按钮点击时没有鼠标坐标，改为在目标元素中心绽放。
+          if (event.detail === 0 && event.target instanceof Element) {
+            const bounds = event.target.getBoundingClientRect();
+            x = bounds.left + bounds.width / 2;
+            y = bounds.top + bounds.height / 2;
+          }
+
+          createHeartBurst(x, y);
+        });
+      }
+    </script>
   </body>
 </html>
