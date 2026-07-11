@@ -26,16 +26,17 @@ const STACK_LIMIT = 3;
 
 <section id="timeline" class="timeline-section">
   <h2>时间线<span>♡</span></h2>
-  <div class="timeline-line" aria-hidden="true">
-    <span class="node n1"></span>
-    <span class="node n2"></span>
-    <span class="node n3"></span>
-  </div>
+  <div class="timeline-track">
+    <div class="timeline-line" aria-hidden="true">
+      <span class="node n1"></span>
+      <span class="node n2"></span>
+      <span class="node n3"></span>
+    </div>
 
-  {timelineCards.map(({ entry, Content }, index) => {
-    const { images, alt, side, tilt, date, title } = entry.data;
-    const stackImgs = images.slice(0, STACK_LIMIT);
-    const hasStack = images.length > 1;
+    {timelineCards.map(({ entry, Content }, index) => {
+      const { images, alt, side, tilt, date, title } = entry.data;
+      const stackImgs = images.slice(0, STACK_LIMIT);
+      const hasStack = images.length > 1;
 
     const photoBlock = (tapeSide: "left" | "right") => hasStack ? (
       <div
@@ -81,30 +82,31 @@ const STACK_LIMIT = 3;
       </figure>
     );
 
-    return (
-      <article class={`event event-${side} event-${index + 1}`}>
-        {side === "left" ? (
-          <>
-            {photoBlock("left")}
-            <div class="memory-card">
-              <time>{date}</time>
-              <h3>{title} <span>♡</span></h3>
-              <Content />
-            </div>
-          </>
-        ) : (
-          <>
-            <div class="memory-card">
-              <time>{date}</time>
-              <h3>{title} <span>♡</span></h3>
-              <Content />
-            </div>
-            {photoBlock("right")}
-          </>
-        )}
-      </article>
-    );
-  })}
+      return (
+        <article class={`event event-${side} event-${index + 1}`}>
+          {side === "left" ? (
+            <>
+              {photoBlock("left")}
+              <div class="memory-card">
+                <time>{date}</time>
+                <h3>{title} <span>♡</span></h3>
+                <Content />
+              </div>
+            </>
+          ) : (
+            <>
+              <div class="memory-card">
+                <time>{date}</time>
+                <h3>{title} <span>♡</span></h3>
+                <Content />
+              </div>
+              {photoBlock("right")}
+            </>
+          )}
+        </article>
+      );
+    })}
+  </div>
 
   <p class="future">
     未来的每一天，<br />

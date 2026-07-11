@@ -741,11 +741,15 @@ h3 span,
   transform: rotate(16deg);
 }
 
+.timeline-track {
+  position: relative;
+}
+
 .timeline-line {
   position: absolute;
   left: 50%;
-  top: clamp(152px, 13vw, 190px);
-  bottom: clamp(104px, 10vw, 140px);
+  top: 0;
+  bottom: 0;
   width: 1.4px;
   background: var(--line);
 }
@@ -1617,8 +1621,8 @@ h3 span,
 
   .timeline-line {
     left: 18px;
-    top: 142px;
-    bottom: 118px;
+    top: 0;
+    bottom: 0;
   }
 
   .event,
@@ -1772,8 +1776,8 @@ h3 span,
   }
 
   .timeline-line {
-    top: 130px;
-    bottom: 120px;
+    top: 0;
+    bottom: 0;
   }
 
   .event,

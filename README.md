@@ -7,8 +7,6 @@
 <a href="https://linux.do"><img src="https://img.shields.io/badge/LINUX%20DO-社区-f0b752?style=flat-square" alt="LINUX DO"></a>
 ![Netlify](https://img.shields.io/badge/deploy-Netlify-00c7b7?logo=netlify&logoColor=white)
 
-体验地址：[zhlyxh.com](https://zhlyxh.com)
-
 一个用 Astro 构建的双页纪念站。
 
 
@@ -177,31 +175,21 @@ Netlify 会自动拉取最新代码并重新部署。
 
 ### 自定义域名
 
-如果使用 `zhlyxh.com`，在 Netlify 中进入：
+项目当前不预设域名。如需绑定自己的域名，请在 Netlify 中进入：
 
 ```text
 Site configuration -> Domain management
 ```
 
-添加自定义域名：
+添加你的自定义域名，然后按 Netlify 提示到域名服务商处配置 DNS。
 
-```text
-zhlyxh.com
-```
-
-然后按 Netlify 提示到域名服务商处配置 DNS。正式域名也需要同步写在：
+如需让 Astro 生成带绝对地址的链接，可在绑定域名后将实际地址写入：
 
 ```text
 astro.config.mjs
 ```
 
-当前配置为：
-
-```js
-export default defineConfig({
-  site: "https://zhlyxh.com",
-});
-```
+当前项目未设置 `site`，因此不会绑定到任何默认域名。
 
 ### 部署排查
 
